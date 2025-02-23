@@ -1,9 +1,13 @@
 import express from 'express'
-import { getTodaysProblem, isSolved, unCheck } from '../controllers/problemController.js'
+import { getSolvedProblems, handleNewProblem,  handleRevisionProblem,  newGetTodaysProblem } from '../controllers/new.js'
 const router = express.Router()
 
-router.get('/check',isSolved)
-router.post('/uncheck',unCheck)
-router.get('/getTodaysProblem/:email',getTodaysProblem)
+router.get('/getTodaysProblem/:email',newGetTodaysProblem)
+
+router.post('/api/newProblemSolved',handleNewProblem)
+
+router.post('/api/revisionProblemSolved',handleRevisionProblem)
+
+router.get('/api/solvedProblemIds/:email',getSolvedProblems)
 
 export default router

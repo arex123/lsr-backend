@@ -195,26 +195,27 @@ async function getLastSolvedProblem(username) {
   }
 }
 
-export const getTodaysProblem = async (req, res) => {
-  console.log("getting todays problem")
-  const today = new Date()
-  today.setHours(0,0,0,0)
+// export const getTodaysProblem = async (req, res) => {
+//   console.log("getting todays problem")
+//   const today = new Date()
+//   today.setHours(0,0,0,0)
 
-  const tommorow = new Date(today)
-  tommorow.setDate(today.getDate()+1)
+//   const tommorow = new Date(today)
+//   tommorow.setDate(today.getDate()+1)
 
-  const email = req.params.email
-  const problemsToSolveToday = await Schedule.find({
-    email,
-    dateToSolve:{$gte:today,$lt:tommorow},
-    status:false
-  })
+//   const email = req.params.email
+//   const problemsToSolveToday = await Schedule.find({
+//     email,
+//     dateToSolve:{$gte:today,$lt:tommorow},
+//     status:false
+//   })
   
-  console.log("getting todays problem 1 ",problemsToSolveToday)
+//   console.log("getting todays problem 1 ",problemsToSolveToday)
   
-  res.json({
-    success:true,
-    problemsToSolveToday
-  })
+//   res.json({
+//     success:true,
+//     problemsToSolveToday
+//   })
 
-};
+// };
+
