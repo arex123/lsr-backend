@@ -1,4 +1,3 @@
-// const mongoose = require('mongoose');
 import mongoose from "mongoose";
 
 const problemScheduleSchema = new mongoose.Schema({
@@ -16,5 +15,4 @@ const problemScheduleSchema = new mongoose.Schema({
 
 const ProblemSchedule = mongoose.model('ProblemSchedule', problemScheduleSchema);
 
-// module.exports = ProblemSchedule;
 export default ProblemSchedule;
