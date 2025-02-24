@@ -8,8 +8,8 @@ const app = express();
 MongodbConnect();
 
 
-app.use(probRouter)
 app.use(cors())
+app.use(probRouter)
 
 // Start server
 const PORT = process.env.PORT || 5050;
