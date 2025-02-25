@@ -5,7 +5,7 @@ const generateReviewDates = (difficulty) => {
   let days;
   if (difficulty === "Easy") days = [0, 3, 7, 30];
   else if (difficulty === "Medium") days = [0, 1, 7, 15, 45];
-  else days = [0, 2, 4, 10, 30, 90]; // Hard
+  else days = [0, 1, 4, 10, 30, 90]; // Hard
 
   return days.map((d) => new Date(today.getTime() + d * 86400000)); // 86400000 ms in a day
 };
@@ -37,31 +37,40 @@ export const handleNewProblem = async (req, res) => {
     res.status(500).json({ message: "❌ Error scheduling problem.", error });
   }
 };
-
-//🗓️ Fetch Only Today’s Problems (Ultra-Fast)
 export const newGetTodaysProblem = async (req, res) => {
   const { email } = req.params;
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-
-  const tomorrowStart = new Date(todayStart);
-  tomorrowStart.setDate(todayStart.getDate() + 1);
 
   try {
-    const problems = await ProblemSchedule.find({
-      email,
-      nextReviewDate: { $gte: todayStart, $lt: tomorrowStart },
-    }).lean(); // ⚡ lean() returns plain JS objects, faster read
+    // ✅ Get today's start and end time in UTC for consistency
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
 
-    res.status(200).json({ problems });
+    const tomorrowStart = new Date(todayStart);
+    tomorrowStart.setUTCDate(todayStart.getUTCDate() + 1);
+
+    console.log("✅ Today Start (UTC):", todayStart);
+    console.log("✅ Tomorrow Start (UTC):", tomorrowStart);
+
+    // ⚡ Query database for today's problems based on nextReviewDate
+    const problems = await ProblemSchedule.find(
+      {
+        email,
+        nextReviewDate: { $gte: todayStart, $lt: tomorrowStart },
+      },
+      { problemId: 1, _id: 0 } // 🎯 Project only `problemId`, exclude `_id`
+    ).lean();
+
+    // 🏷️ Extract problemIds into a simple array
+    const problemIds = problems.map((problem) => problem.problemId);
+
+    console.log("🎯 Today's Problem IDs:", problemIds);
+
+    res.status(200).json({ problemIds });
   } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ message: "❌ Error fetching today’s problems.", error });
+    console.error("❌ Error fetching today’s problems:", error);
+    res.status(500).json({ message: "❌ Error fetching today’s problems.", error });
   }
 };
-
 // ✅ Mark Problem as Solved/Reviewed and Update Repetition Count
 export const handleRevisionProblem = async (req, res) => {
   const { email, problemId } = req.body;
