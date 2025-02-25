@@ -7,7 +7,7 @@ import probRouter from './routes/problemRouter.js'
 const app = express();
 MongodbConnect();
 
-
+app.use(express.json())
 app.use(cors())
 app.use(probRouter)
 

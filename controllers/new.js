@@ -3,9 +3,9 @@ import ProblemSchedule from "../models/ProblemSchedule.js";
 const generateReviewDates = (difficulty) => {
   const today = new Date();
   let days;
-  if (difficulty === "Easy") days = [0, 3, 7, 30];
-  else if (difficulty === "Medium") days = [0, 1, 7, 15, 45];
-  else days = [0, 1, 4, 10, 30, 90]; // Hard
+  if (difficulty === "Easy") days = [ 3, 7, 30];
+  else if (difficulty === "Medium") days = [ 1, 7, 15, 45];
+  else days = [ 1, 4, 10, 30, 90]; // Hard
 
   return days.map((d) => new Date(today.getTime() + d * 86400000)); // 86400000 ms in a day
 };
@@ -73,6 +73,7 @@ export const newGetTodaysProblem = async (req, res) => {
 };
 // ✅ Mark Problem as Solved/Reviewed and Update Repetition Count
 export const handleRevisionProblem = async (req, res) => {
+  console.log("rewq ",req.body)
   const { email, problemId } = req.body;
   try {
     // Find the problem for the user and check if it's in the review queue
