@@ -37,25 +37,22 @@ export const handleNewProblem = async (req, res) => {
     res.status(500).json({ message: "❌ Error scheduling problem.", error });
   }
 };
-export const newGetTodaysProblem = async (req, res) => {
+export const getProblemsForTodayAndBefore = async (req, res) => {
   const { email } = req.params;
 
   try {
-    // ✅ Get today's start and end time in UTC for consistency
-    const todayStart = new Date();
-    todayStart.setUTCHours(0, 0, 0, 0);
+    // ✅ Get today's end time in UTC for consistency
+    const tomorrowStart = new Date();
+    tomorrowStart.setUTCHours(0, 0, 0, 0);
+    tomorrowStart.setUTCDate(tomorrowStart.getUTCDate() + 1);
 
-    const tomorrowStart = new Date(todayStart);
-    tomorrowStart.setUTCDate(todayStart.getUTCDate() + 1);
-
-    console.log("✅ Today Start (UTC):", todayStart);
     console.log("✅ Tomorrow Start (UTC):", tomorrowStart);
 
-    // ⚡ Query database for today's problems based on nextReviewDate
+    // ⚡ Query database for today's problems and all problems before today
     const problems = await ProblemSchedule.find(
       {
         email,
-        nextReviewDate: { $gte: todayStart, $lt: tomorrowStart },
+        nextReviewDate: { $lt: tomorrowStart }, // Changed to get all problems before tomorrow
       },
       { problemId: 1, _id: 0 } // 🎯 Project only `problemId`, exclude `_id`
     ).lean();
@@ -63,12 +60,15 @@ export const newGetTodaysProblem = async (req, res) => {
     // 🏷️ Extract problemIds into a simple array
     const problemIds = problems.map((problem) => problem.problemId);
 
-    console.log("🎯 Today's Problem IDs:", problemIds);
+    console.log("🎯 Today's and Previous Problem IDs:", problemIds);
 
     res.status(200).json({ problemIds });
   } catch (error) {
-    console.error("❌ Error fetching today’s problems:", error);
-    res.status(500).json({ message: "❌ Error fetching today’s problems.", error });
+    console.error("❌ Error fetching today's and previous problems:", error);
+    res.status(500).json({ 
+      message: "❌ Error fetching today's and previous problems.", 
+      error 
+    });
   }
 };
 // ✅ Mark Problem as Solved/Reviewed and Update Repetition Count
