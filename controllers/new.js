@@ -37,7 +37,7 @@ export const handleNewProblem = async (req, res) => {
     res.status(500).json({ message: "❌ Error scheduling problem.", error });
   }
 };
-export const getProblemsForTodayAndBefore = async (req, res) => {
+export const newGetTodaysProblem = async (req, res) => {
   const { email } = req.params;
 
   try {
