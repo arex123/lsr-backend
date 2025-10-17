@@ -7,11 +7,16 @@ const problemScheduleSchema = new mongoose.Schema({
   reviewQueue: { type: [Date], required: true },
   nextReviewDate: { type: Date, required: true },
   repetitionCount: { type: Number, default: 0 }, // Number of times solved/reviewed
-  solvedProblems: [{  // Track solved problems with their IDs
-    problemId: String,
-    solvedAt: Date,
+  reviewHistory: [{  // Track each time the problem was solved
+    solvedAt: { type: Date, default: Date.now },
   }],
-});
+  notes: [{  // User notes for the problem
+    content: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+  }],
+  status: { type: String, default: "active" }, // active or completed
+}, { timestamps: true }); // Adds createdAt and updatedAt
 
 const ProblemSchedule = mongoose.model('ProblemSchedule', problemScheduleSchema);
 
